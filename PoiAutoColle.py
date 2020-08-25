@@ -183,12 +183,12 @@ class PoiAutoColle:
         # self.click(RETURN_HOME_CENTRAL, RETURN_HOME_ERROR, 2, 2)
         printTime("已完成补给")
 
-    def validate(self, centralPer, errorPer, baseImg, text, useHist=True):
+    def validate(self, centralPer, errorPer, baseImg, text):
         printTime("正在识别图像...", nextLine=False)
         while True:
             temImage = self.screenshot(centralPer, errorPer, save=False)
             print(".", end="")
-            if compare(temImage, baseImg, useHist) > 0.95:
+            if compare(temImage, baseImg) > 0.85 or compare(temImage, baseImg, useHist=False) > 0.85:
                 print("已成功识别: {}".format(text))
                 break
             time.sleep(1)
@@ -210,14 +210,16 @@ class PoiAutoColle:
         while True:
             temImage = self.screenshot(NOT_NIGHT_CENTRAL, NOT_NIGHT_ERROR, save=False)
             print(".", end="")
-            if compare(temImage, self.IMG_NOT_NIGHT) > 0.95:
+            if compare(temImage, self.IMG_NOT_NIGHT) > 0.85 or \
+                    compare(temImage, self.IMG_NOT_NIGHT, useHist=False) > 0.85:
                 # printTime("第{}回对比成功!".format(count))
                 print("已成功识别: {}".format("回避夜战"))
                 clickNotNight = True
                 break
             temImage = self.screenshot(NEXT_PAGE_CENTRAL, NEXT_PAGE_ERROR, save=False)
             print(".", end="")
-            if compare(temImage, self.IMG_NEXT_PAGE, useHist=False) > 0.95:
+            if compare(temImage, self.IMG_NEXT_PAGE) > 0.85 or \
+                    compare(temImage, self.IMG_NEXT_PAGE, useHist=False) > 0.85:
                 # printTime("第{}回对比成功!".format(count))
                 print("已成功识别: {}".format("下一页"))
                 break
@@ -228,6 +230,7 @@ class PoiAutoColle:
             self.click(NOT_NIGHT_CENTRAL, NOT_NIGHT_ERROR, 0, 1)
             printTime("已选择回避夜战")
             time.sleep(10)
+        self.validate(NEXT_PAGE_CENTRAL, NEXT_PAGE_ERROR, self.IMG_NEXT_PAGE, "下一页")
         self.click((0.5, 0.5), (0.4, 0.4), 0, 1)
         printTime("已点击屏幕")
         self.click((0.5, 0.5), (0.4, 0.4), 5, 1)
@@ -239,20 +242,22 @@ class PoiAutoColle:
         while True:
             temImage = self.screenshot(NEW_SHIP_CENTRAL, NEW_SHIP_ERROR, save=False)
             print(".", end="")
-            if compare(temImage, self.IMG_NEW_SHIP) > 0.95:
+            if compare(temImage, self.IMG_NEW_SHIP) > 0.85 or \
+                    compare(temImage, self.IMG_NEW_SHIP, useHist=False) > 0.85:
                 print("已成功识别: {}".format("获得新船"))
                 playsound("audio/new_ship.mp3")
                 clickReturn = True
                 break
             temImage = self.screenshot(MOVE_ON_CENTRAL, MOVE_ON_ERROR, save=False)
             print(".", end="")
-            if compare(temImage, self.IMG_MOVE_ON) > 0.95:
+            if compare(temImage, self.IMG_MOVE_ON) > 0.85 or \
+                    compare(temImage, self.IMG_MOVE_ON, useHist=False) > 0.85:
                 print("已成功识别: {}".format("进击"))
                 clickMoveOn = True
                 break
             temImage = self.screenshot(HOME_ATTACK_CENTRAL, HOME_ATTACK_ERROR, save=False)
             print(".", end="")
-            if compare(temImage, self.IMG_HOME) > 0.95:
+            if compare(temImage, self.IMG_HOME) > 0.85:
                 print("已成功识别: {}".format("母港"))
                 break
             time.sleep(1)
@@ -264,13 +269,15 @@ class PoiAutoColle:
             while True:
                 temImage = self.screenshot(MOVE_ON_CENTRAL, MOVE_ON_ERROR, save=False)
                 print(".", end="")
-                if compare(temImage, self.IMG_MOVE_ON) > 0.95:
+                if compare(temImage, self.IMG_MOVE_ON) > 0.85 or \
+                        compare(temImage, self.IMG_MOVE_ON, useHist=False) > 0.85:
                     print("已成功识别: {}".format("进击"))
                     clickMoveOn = True
                     break
                 temImage = self.screenshot(HOME_ATTACK_CENTRAL, HOME_ATTACK_ERROR, save=False)
                 print(".", end="")
-                if compare(temImage, self.IMG_HOME) > 0.95:
+                if compare(temImage, self.IMG_HOME) > 0.85 or \
+                        compare(temImage, self.IMG_HOME, useHist=False) > 0.85:
                     print("已成功识别: {}".format("母港"))
                     break
                 time.sleep(1)
@@ -469,7 +476,7 @@ class PoiAutoColle:
             self.validate(HOME_ATTACK_CENTRAL, HOME_ATTACK_ERROR, self.IMG_HOME, "母港")
             self.click((0.5, 0.5), (0.4, 0.4), 0.5, 0.5)
             time.sleep(10)
-            self.validate(END_SAIL_CENTER, END_SAIL_ERROR, self.IMG_END_SAIL, "下一页", useHist=False)
+            self.validate(END_SAIL_CENTER, END_SAIL_ERROR, self.IMG_END_SAIL, "下一页")
             self.click((0.5, 0.5), (0.4, 0.4), 0.5, 0.5)
             self.click((0.5, 0.5), (0.4, 0.4), 0.5, 0.5)
             printTime("已返回主港")
