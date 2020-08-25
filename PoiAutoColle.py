@@ -136,7 +136,7 @@ class PoiAutoColle:
     def moveToGame(self):
         self.click((0.5, 0.5), (0.4, 0.4), 0, 0)
         print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
-        print("              KanAutoColle助手已启用，愿提督武运昌隆！")
+        print("              PoiAutoColle助手已启用，愿提督武运昌隆！")
 
     def screenshot(self, centralPer, errorPer, save):
         if save:
