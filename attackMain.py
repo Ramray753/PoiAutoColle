@@ -1,6 +1,6 @@
-import KanAutoColle as KAC
+import PoiAutoColle as PAC
 
-scriptAttack = KAC.KanAutoColle()
+scriptAttack = PAC.PoiAutoColle()
 
 scriptAttack.attack2_2(1)
 

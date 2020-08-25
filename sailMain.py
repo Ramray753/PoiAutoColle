@@ -1,5 +1,5 @@
-import KanAutoColle as KAC
+import PoiAutoColle as PAC
 
-scriptSail = KAC.KanAutoColle()
+scriptSail = PAC.PoiAutoColle()
 
 scriptSail.sail03Fleet3(4)

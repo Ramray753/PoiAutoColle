@@ -9,8 +9,8 @@ import random
 import time
 import cv2
 import numpy as np
-from KanConfig import *
-from KanScreenConfig import *
+from PoiConfig import *
+from PoiScreenConfig import *
 import math
 from skimage.metrics import structural_similarity as ssim
 from datetime import datetime
