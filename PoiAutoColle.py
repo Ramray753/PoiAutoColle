@@ -168,6 +168,20 @@ class PoiAutoColle:
         # 点击出击开始
         self.click(FINAL_ATTACK_CENTRAL, FINAL_ATTACK_ERROR, 0, 1)
 
+    def sailStart(self):
+        # 点击主页的出击按钮
+        self.click(HOME_ATTACK_CENTRAL, HOME_ATTACK_ERROR, 0, 0)
+        # 点击远征
+        self.click(NEXT_SAIL_CENTRAL, NEXT_ERROR, 2, 1)
+
+    def sailEndFleet3(self):
+        # 点击决定
+        self.click(DECIDE_CENTRAL, DECIDE_ERROR, 0, 0.5)
+        # 选择第三舰队
+        self.click(DECIDE_FLEET3_CENTRAL, DECIDE_FLEET_ERROR, 0, 0.5)
+        # 点击出击开始
+        self.click(FINAL_ATTACK_CENTRAL, FINAL_ATTACK_ERROR, 0, 0.5)
+
     def supply(self, head, num):
         print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
         self.validate(HOME_ATTACK_CENTRAL, HOME_ATTACK_ERROR, self.IMG_HOME, "母港")
@@ -319,6 +333,8 @@ class PoiAutoColle:
     def attack2_2(self, num):
         self.moveToGame()
         playsound("audio/begin.mp3")
+        print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
+        printTime("开始进行2-2练级(共{}回)".format(num))
         sumTime = 0
         for i in range(1, num + 1):
             if i != 1:
@@ -327,6 +343,8 @@ class PoiAutoColle:
             print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
             printTime("第{}回2-2练级开始(共{}回)".format(i, num))
             self.attack2_2Single()
+            if i == num:
+                self.click(RETURN_HOME_CENTRAL, RETURN_HOME_ERROR, 2, 2)
             print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
             endTime = time.time()
             diffTime = endTime - startTime
@@ -345,6 +363,8 @@ class PoiAutoColle:
     def attack1_1(self):
         self.moveToGame()
         playsound("audio/begin.mp3")
+        print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
+        printTime("开始进行1-1刷闪")
         startTime = time.time()
         # 点击出击
         self.attackStart()
@@ -365,13 +385,14 @@ class PoiAutoColle:
         self.validate(COMPASS_CENTRAL, COMPASS_ERROR, self.IMG_COMPASS, "罗盘")
         self.click(COMPASS_CENTRAL, COMPASS_ERROR, 0, 1)
         printTime("已点击罗盘")
-        self.combat(0, 35, "none")
+        self.combat(0, 40, "none")
         printTime("战斗2结束，返回母港")
         # 补给
         self.supply(head=True, num=1)
+        # 战斗结束
+        self.click(RETURN_HOME_CENTRAL, RETURN_HOME_ERROR, 2, 2)
         endTime = time.time()
         diffTime = endTime - startTime
-        # 战斗结束
         playsound("audio/end.mp3")
         print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
         printTime("单次1-1刷闪已结束，共耗时{}分{}秒".format(int(diffTime) // 60, round(diffTime % 60)))
@@ -379,6 +400,8 @@ class PoiAutoColle:
     def attack1_5(self):
         self.moveToGame()
         playsound("audio/begin.mp3")
+        print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
+        printTime("开始进行1-5练级")
         startTime = time.time()
         # 点击出击
         self.attackStart()
@@ -389,8 +412,6 @@ class PoiAutoColle:
         # 确定出击
         self.attackEnd()
         # 以下为战斗部分
-        print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
-        printTime("开始1-5练级")
         # 战斗1
         print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
         printTime("战斗1:")
@@ -432,20 +453,6 @@ class PoiAutoColle:
         print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
         printTime("单次1-5练级已结束，共耗时{}分{}秒".format(int(diffTime) // 60, round(diffTime % 60)))
 
-    def sailStart(self):
-        # 点击主页的出击按钮
-        self.click(HOME_ATTACK_CENTRAL, HOME_ATTACK_ERROR, 0, 0)
-        # 点击远征
-        self.click(NEXT_SAIL_CENTRAL, NEXT_ERROR, 2, 1)
-
-    def sailEndFleet3(self):
-        # 点击决定
-        self.click(DECIDE_CENTRAL, DECIDE_ERROR, 0, 0.5)
-        # 选择第三舰队
-        self.click(DECIDE_FLEET3_CENTRAL, DECIDE_FLEET_ERROR, 0, 0.5)
-        # 点击出击开始
-        self.click(FINAL_ATTACK_CENTRAL, FINAL_ATTACK_ERROR, 0, 0.5)
-
     def sail03Fleet3Single(self):
         # 点击远征
         self.sailStart()
@@ -453,23 +460,22 @@ class PoiAutoColle:
         self.click(SAIL_03_CENTRAL, SELECT_SAIL_ERROR, 2, 1)
         # 确定出击第三舰队
         self.sailEndFleet3()
-        # 开始远征03
-        print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
-        printTime("第三舰队已出发")
 
     def sail03Fleet3(self, num):
         self.moveToGame()
         playsound("audio/begin.mp3")
+        print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
+        printTime("开始进行第三舰队03远征(共{}回)".format(num))
         for i in range(1, num + 1):
+            self.sail03Fleet3Single()
             print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
             printTime("第三舰队开始第{}回03远征(共{}回)".format(i, num))
-            self.sail03Fleet3Single()
             for j in range(1, 4):
                 time.sleep(60 * 5)
                 printTime("距离远征结束还有{}分钟".format(5 * (4 - j)))
             time.sleep(60 * 5)
             delay = random.uniform(0, 180)
-            printTime("远征已结束延迟{}秒后返回母港".format(round(delay)))
+            printTime("远征已结束，延迟{}秒后返回母港".format(round(delay)))
             time.sleep(delay)
             self.click(RETURN_HOME_CENTRAL, RETURN_HOME_ERROR, 0, 0.5)
             time.sleep(3)
@@ -477,12 +483,15 @@ class PoiAutoColle:
             self.click((0.5, 0.5), (0.4, 0.4), 0.5, 0.5)
             time.sleep(10)
             self.validate(END_SAIL_CENTER, END_SAIL_ERROR, self.IMG_END_SAIL, "下一页")
-            self.click((0.5, 0.5), (0.4, 0.4), 0.5, 0.5)
-            self.click((0.5, 0.5), (0.4, 0.4), 0.5, 0.5)
+            self.click((0.5, 0.5), (0.4, 0.4), 1, 0.5)
+            self.click((0.5, 0.5), (0.4, 0.4), 1, 0.5)
             printTime("已返回主港")
             time.sleep(3)
             self.supply(head=False, num=3)
+            self.click(RETURN_HOME_CENTRAL, RETURN_HOME_ERROR, 2, 2)
             print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
             printTime("第三舰队第{}回03远征结束(共{}回)".format(i, num))
             time.sleep(random.uniform(0, 10))
+        print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
+        printTime("第三舰队03远征已结束(共{}回)".format(num))
         playsound("audio/end.mp3")
