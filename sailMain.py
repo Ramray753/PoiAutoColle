@@ -2,4 +2,4 @@ import PoiAutoColle as PAC
 
 scriptSail = PAC.PoiAutoColle()
 
-scriptSail.sail03Fleet3(4)
+scriptSail.expedition(sailMap="3", fleet=3, num=3)
