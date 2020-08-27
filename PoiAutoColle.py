@@ -47,6 +47,7 @@ def relocate():
     file.write("DEFAULT_TOP_LEFT = ({}, {})\n".format(topLeftX, topLeftY))
     file.write("DEFAULT_LENGTH = {}\n".format(topRightX - topLeftX))
     file.write("DEFAULT_WIDTH = {}\n".format(botLeftY - topLeftY))
+    file.close()
 
 
 class PoiAutoColle:
