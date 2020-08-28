@@ -60,7 +60,8 @@ class PoiAutoColle:
         self.IMG_NOT_NIGHT = cv2.imread("image/NOT_NIGHT.png")
         self.IMG_COMPASS = cv2.imread("image/COMPASS.png")
         self.IMG_COL_FORMAT = cv2.imread("image/COL_FORMAT.png")
-        self.IMG_NEXT_PAGE = cv2.imread("image/NEXT_PAGE.png")
+        self.IMG_NEXT_PAGE_S = cv2.imread("image/NEXT_PAGE_S.png")
+        self.IMG_NEXT_PAGE_A = cv2.imread("image/NEXT_PAGE_A.png")
         self.IMG_EXE_COL = cv2.imread("image/EXE_COL.png")
         self.IMG_NEW_SHIP = cv2.imread("image/NEW_SHIP.png")
         self.IMG_ROW_FORMAT = cv2.imread("image/ROW_FORMAT.png")
@@ -193,7 +194,8 @@ class PoiAutoColle:
                 break
             temImage = self.__screenshot__(NEXT_PAGE_CENTRAL, NEXT_PAGE_ERROR)
             print(".", end="")
-            if self.__compare__(temImage, self.IMG_NEXT_PAGE) > 0.85:
+            if self.__compare__(temImage, self.IMG_NEXT_PAGE_S) > 0.85 or \
+                    self.__compare__(temImage, self.IMG_NEXT_PAGE_A) > 0.85:
                 print("已成功识别: {}".format("下一页"))
                 break
             time.sleep(1)
@@ -201,7 +203,15 @@ class PoiAutoColle:
             self.__click__(NOT_NIGHT_CENTRAL, NOT_NIGHT_ERROR, 0, 1)
             self.__printTime__("已选择回避夜战")
             time.sleep(10)
-            self.__validate__(NEXT_PAGE_CENTRAL, NEXT_PAGE_ERROR, self.IMG_NEXT_PAGE, "下一页")
+            self.__printTime__("正在识别图像...", nextLine=False)
+            while True:
+                temImage = self.__screenshot__(NEXT_PAGE_CENTRAL, NEXT_PAGE_ERROR)
+                print(".", end="")
+                if self.__compare__(temImage, self.IMG_NEXT_PAGE_S) > 0.85 or \
+                        self.__compare__(temImage, self.IMG_NEXT_PAGE_A) > 0.85:
+                    print("已成功识别: {}".format("下一页"))
+                    break
+                time.sleep(1)
         self.__click__((0.5, 0.5), (0.4, 0.4), 0, 1)
         self.__printTime__("已点击屏幕")
         self.__click__((0.5, 0.5), (0.4, 0.4), 5, 1)
