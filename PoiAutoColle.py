@@ -350,7 +350,7 @@ class PoiAutoColle:
         self.__validate__(COMPASS_CENTRAL, COMPASS_ERROR, self.IMG_COMPASS, "罗盘")
         self.__click__(COMPASS_CENTRAL, COMPASS_ERROR, 0, 1)
         self.__printTime__("已点击罗盘")
-        self.__combat__(7, 55, "col")
+        self.__combat__(7, 45, "col")
         self.__printTime__("战斗1结束，进击到下一区域")
         # 战斗2
         print("- - - - - - - - - - - - - - - - - - - - - - - - - -")

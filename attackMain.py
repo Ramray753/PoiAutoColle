@@ -2,5 +2,4 @@ import PoiAutoColle as PAC
 
 scriptAttack = PAC.PoiAutoColle()
 
-# scriptAttack.sortie(sortieMap="2-2", num=1)
-
+scriptAttack.sortie(sortieMap="1-5", num=1)
