@@ -66,6 +66,8 @@ class PoiAutoColle:
         self.IMG_NEW_SHIP = cv2.imread("image/NEW_SHIP.png")
         self.IMG_ROW_FORMAT = cv2.imread("image/ROW_FORMAT.png")
         self.IMG_END_SAIL = cv2.imread("image/END_SAIL.png")
+        self.IMG_DUO_FORMAT = cv2.imread("image/DUO_FORMAT.png")
+        self.IMG_STOP_NEXT = cv2.imread("image/STOP_NEXT.png")
 
     @staticmethod
     def __printTime__(text, nextLine=True):
@@ -112,13 +114,13 @@ class PoiAutoColle:
         # 点击主页的出击按钮
         self.__click__(HOME_ATTACK_CENTRAL, HOME_ATTACK_ERROR, 2, 2)
         # 点击出击选择中的出击按钮
-        self.__click__(NEXT_ATTACK_CENTRAL, NEXT_ERROR, 2, 1)
+        self.__click__(NEXT_ATTACK_CENTRAL, NEXT_ERROR, 1, 1)
 
     def __attackEnd__(self):
         # 点击决定
-        self.__click__(DECIDE_CENTRAL, DECIDE_ERROR, 0, 1)
+        self.__click__(DECIDE_CENTRAL, DECIDE_ERROR, 0.5, 0)
         # 点击出击开始
-        self.__click__(FINAL_ATTACK_CENTRAL, FINAL_ATTACK_ERROR, 0, 1)
+        self.__click__(FINAL_ATTACK_CENTRAL, FINAL_ATTACK_ERROR, 0.5, 0)
 
     def __sailStart__(self):
         # 点击主页的出击按钮
@@ -171,7 +173,7 @@ class PoiAutoColle:
                 break
             time.sleep(1)
 
-    def __combat__(self, sec1, sec2, formation):
+    def __combat__(self, sec1, sec2, formation, stopNext=False):
         time.sleep(sec1)
         if formation != "none":
             if formation == "col":
@@ -182,13 +184,17 @@ class PoiAutoColle:
                 self.__validate__(ROW_FORMAT_CENTRAL, FORMAT_ERROR, self.IMG_ROW_FORMAT, "单横阵")
                 self.__click__(ROW_FORMAT_CENTRAL, FORMAT_ERROR, 0, 1)
                 self.__printTime__("已选择单横阵型")
+            elif formation == "duo":
+                self.__validate__(DUO_FORMAT_CENTRAL, FORMAT_ERROR, self.IMG_DUO_FORMAT, "复纵阵")
+                self.__click__(DUO_FORMAT_CENTRAL, FORMAT_ERROR, 0, 1)
+                self.__printTime__("已选择复纵阵型")
         time.sleep(sec2)
         clickNotNight = False
         self.__printTime__("正在识别图像...", nextLine=False)
         while True:
             temImage = self.__screenshot__(NOT_NIGHT_CENTRAL, NOT_NIGHT_ERROR)
             print(".", end="")
-            if self.__compare__(temImage, self.IMG_NOT_NIGHT) > 0.85:
+            if self.__compare__(temImage, self.IMG_NOT_NIGHT) > 0.95:
                 print("已成功识别: {}".format("回避夜战"))
                 clickNotNight = True
                 break
@@ -200,7 +206,7 @@ class PoiAutoColle:
                 break
             time.sleep(1)
         if clickNotNight:
-            self.__click__(NOT_NIGHT_CENTRAL, NOT_NIGHT_ERROR, 0, 1)
+            self.__click__(NOT_NIGHT_CENTRAL, NOT_NIGHT_ERROR, 2, 1)
             self.__printTime__("已选择回避夜战")
             time.sleep(10)
             self.__printTime__("正在识别图像...", nextLine=False)
@@ -216,7 +222,6 @@ class PoiAutoColle:
         self.__printTime__("已点击屏幕")
         self.__click__((0.5, 0.5), (0.4, 0.4), 5, 1)
         self.__printTime__("已点击屏幕")
-        time.sleep(3)
         clickMoveOn = False
         clickReturn = False
         self.__printTime__("正在识别图像...", nextLine=False)
@@ -228,12 +233,20 @@ class PoiAutoColle:
                 playsound("audio/new_ship.mp3")
                 clickReturn = True
                 break
-            temImage = self.__screenshot__(MOVE_ON_CENTRAL, MOVE_ON_ERROR)
-            print(".", end="")
-            if self.__compare__(temImage, self.IMG_MOVE_ON) > 0.85:
-                print("已成功识别: {}".format("进击"))
-                clickMoveOn = True
-                break
+            if stopNext:
+                temImage = self.__screenshot__(STOP_NEXT_CENTRAL, MOVE_ON_ERROR)
+                print(".", end="")
+                if self.__compare__(temImage, self.IMG_STOP_NEXT) > 0.85:
+                    print("已成功识别: {}".format("撤退"))
+                    self.__click__(STOP_NEXT_CENTRAL, MOVE_ON_ERROR, 0, 1)
+                    break
+            else:
+                temImage = self.__screenshot__(MOVE_ON_CENTRAL, MOVE_ON_ERROR)
+                print(".", end="")
+                if self.__compare__(temImage, self.IMG_MOVE_ON) > 0.85:
+                    print("已成功识别: {}".format("进击"))
+                    clickMoveOn = True
+                    break
             temImage = self.__screenshot__(HOME_ATTACK_CENTRAL, HOME_ATTACK_ERROR)
             print(".", end="")
             if self.__compare__(temImage, self.IMG_HOME) > 0.85:
@@ -246,12 +259,20 @@ class PoiAutoColle:
             time.sleep(3)
             self.__printTime__("正在识别图像...", nextLine=False)
             while True:
-                temImage = self.__screenshot__(MOVE_ON_CENTRAL, MOVE_ON_ERROR)
-                print(".", end="")
-                if self.__compare__(temImage, self.IMG_MOVE_ON) > 0.85:
-                    print("已成功识别: {}".format("进击"))
-                    clickMoveOn = True
-                    break
+                if stopNext:
+                    temImage = self.__screenshot__(STOP_NEXT_CENTRAL, MOVE_ON_ERROR)
+                    print(".", end="")
+                    if self.__compare__(temImage, self.IMG_STOP_NEXT) > 0.85:
+                        print("已成功识别: {}".format("撤退"))
+                        self.__click__(STOP_NEXT_CENTRAL, MOVE_ON_ERROR, 0, 1)
+                        break
+                else:
+                    temImage = self.__screenshot__(MOVE_ON_CENTRAL, MOVE_ON_ERROR)
+                    print(".", end="")
+                    if self.__compare__(temImage, self.IMG_MOVE_ON) > 0.85:
+                        print("已成功识别: {}".format("进击"))
+                        clickMoveOn = True
+                        break
                 temImage = self.__screenshot__(HOME_ATTACK_CENTRAL, HOME_ATTACK_ERROR)
                 print(".", end="")
                 if self.__compare__(temImage, self.IMG_HOME) > 0.85:
@@ -265,7 +286,7 @@ class PoiAutoColle:
         # 点击出击
         self.__attackStart__()
         # 点击图1-1
-        self.__click__(FIRST_MAP_CENTRAL, MAP_ERROR, 2, 1)
+        self.__click__(FIRST_MAP_CENTRAL, MAP_ERROR, 1, 1)
         # 确定出击
         self.__attackEnd__()
         # 以下为战斗部分
@@ -291,7 +312,7 @@ class PoiAutoColle:
         # 点击出击
         self.__attackStart__()
         # 点击扩张海域
-        self.__click__(EXTRA_ATTACK_CENTRAL, EXTRA_ATTACK_ERROR, 2, 1)
+        self.__click__(EXTRA_ATTACK_CENTRAL, EXTRA_ATTACK_ERROR, 1, 1)
         # 点击图1-5
         self.__click__(EXTRA_5_CENTRAL, EXTRA_5_ERROR, 0, 0.5)
         # 确定出击
@@ -337,7 +358,7 @@ class PoiAutoColle:
         # 点击出击
         self.__attackStart__()
         # 点击图2
-        self.__click__(SECOND_SUB_CENTRAL, SECOND_SUB_ERROR, 2, 1)
+        self.__click__(SECOND_SUB_CENTRAL, SUB_MAP_ERROR, 1, 1)
         # 点击图2-2
         self.__click__(SECOND_MAP_CENTRAL, MAP_ERROR, 0, 0.5)
         # 确定出击
@@ -350,7 +371,7 @@ class PoiAutoColle:
         self.__validate__(COMPASS_CENTRAL, COMPASS_ERROR, self.IMG_COMPASS, "罗盘")
         self.__click__(COMPASS_CENTRAL, COMPASS_ERROR, 0, 1)
         self.__printTime__("已点击罗盘")
-        self.__combat__(7, 45, "col")
+        self.__combat__(7, 45, "duo")
         self.__printTime__("战斗1结束，进击到下一区域")
         # 战斗2
         print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
@@ -358,6 +379,99 @@ class PoiAutoColle:
         self.__click__((0.5, 0.5), (0.4, 0.4), 12, 1)
         self.__printTime__("已点击屏幕")
         self.__printTime__("战斗2结束，返回母港")
+        # 补给
+        time.sleep(3)
+        self.__supply__(head=False, num=1)
+
+    def __attack4_5__(self):
+        # 点击出击
+        self.__attackStart__()
+        # 点击图4
+        self.__click__(FIFTH_SUB_CENTRAL, SUB_MAP_ERROR, 1, 1)
+        # 点击扩张海域
+        self.__click__(EXTRA_ATTACK_CENTRAL, EXTRA_ATTACK_ERROR, 1, 1)
+        # 点击图4-5
+        self.__click__(EXTRA_5_CENTRAL, EXTRA_5_ERROR, 0, 0.5)
+        # 确定出击
+        self.__attackEnd__()
+        # 以下为战斗部分
+        # 战斗1
+        print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
+        self.__printTime__("战斗1:")
+        time.sleep(5)
+        self.__validate__(COMPASS_CENTRAL, COMPASS_ERROR, self.IMG_COMPASS, "罗盘")
+        self.__click__(COMPASS_CENTRAL, COMPASS_ERROR, 0, 1)
+        self.__printTime__("已点击罗盘")
+        time.sleep(12)
+        self.__click__(F_4_5_CENTRAL, POINT_SELECT_ERROR, 0, 1)
+        self.__click__(D_4_5_CENTRAL, POINT_SELECT_ERROR, 0, 1)
+        self.__printTime__("已点击屏幕")
+        self.__combat__(8, 45, "row", stopNext=True)
+        self.__printTime__("战斗1结束，返回母港")
+        # 补给
+        time.sleep(3)
+        self.__supply__(head=False, num=1)
+
+    def __attack5_2__(self):
+        # 点击出击
+        self.__attackStart__()
+        # 点击图5
+        self.__click__(SIXTH_SUB_CENTRAL, SUB_MAP_ERROR, 1, 1)
+        # 点击图5-2
+        self.__click__(SECOND_MAP_CENTRAL, MAP_ERROR, 0, 0.5)
+        # 确定出击
+        self.__attackEnd__()
+        # 以下为战斗部分
+        # 战斗1
+        print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
+        self.__printTime__("战斗1:")
+        time.sleep(5)
+        self.__validate__(COMPASS_CENTRAL, COMPASS_ERROR, self.IMG_COMPASS, "罗盘")
+        self.__click__(COMPASS_CENTRAL, COMPASS_ERROR, 0, 1)
+        self.__printTime__("已点击罗盘")
+        self.__combat__(14, 40, "duo", stopNext=True)
+        self.__printTime__("战斗1结束，返回母港")
+        # 补给
+        time.sleep(3)
+        self.__supply__(head=False, num=1)
+
+    def __attack7_2__(self):
+        # 点击出击
+        self.__attackStart__()
+        # 点击图7
+        self.__click__(FOURTH_SUB_CENTRAL, SUB_MAP_ERROR, 1, 1)
+        # 点击图7-2
+        self.__click__(SECOND_MAP_CENTRAL, MAP_ERROR, 0, 0.5)
+        # 确定出击
+        self.__attackEnd__()
+        # 以下为战斗部分
+        # 战斗1
+        print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
+        self.__printTime__("战斗1:")
+        time.sleep(5)
+        self.__validate__(COMPASS_CENTRAL, COMPASS_ERROR, self.IMG_COMPASS, "罗盘")
+        self.__click__(COMPASS_CENTRAL, COMPASS_ERROR, 0, 1)
+        self.__printTime__("已点击罗盘")
+        self.__combat__(8, 35, "row")
+        self.__printTime__("战斗1结束，进击到下一区域")
+        # 战斗2
+        print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
+        self.__printTime__("战斗2:")
+        time.sleep(3)
+        self.__validate__(COMPASS_CENTRAL, COMPASS_ERROR, self.IMG_COMPASS, "罗盘")
+        self.__click__(COMPASS_CENTRAL, COMPASS_ERROR, 0, 1)
+        self.__printTime__("已点击罗盘")
+        self.__combat__(8, 30, "row")
+        self.__printTime__("战斗2结束，进击到下一区域")
+        # 战斗3
+        print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
+        self.__printTime__("战斗3:")
+        time.sleep(3)
+        self.__validate__(COMPASS_CENTRAL, COMPASS_ERROR, self.IMG_COMPASS, "罗盘")
+        self.__click__(COMPASS_CENTRAL, COMPASS_ERROR, 0, 1)
+        self.__printTime__("已点击罗盘")
+        self.__combat__(8, 40, "duo")
+        self.__printTime__("战斗3结束，返回母港")
         # 补给
         time.sleep(3)
         self.__supply__(head=False, num=1)
@@ -431,6 +545,10 @@ class PoiAutoColle:
                 self.__attack1_5__()
             elif sortieMap == '2-2':
                 self.__attack2_2__()
+            elif sortieMap == '4-5':
+                self.__attack4_5__()
+            elif sortieMap == '7-2':
+                self.__attack7_2__()
             if i == num:
                 self.__click__(RETURN_HOME_CENTRAL, RETURN_HOME_ERROR, 2, 2)
             print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
@@ -440,7 +558,7 @@ class PoiAutoColle:
             self.__printTime__(
                 "第{}回{}练级结束(共{}回)，耗时{}分{}秒".format(i, sortieMap, num, int(diffTime) // 60, round(diffTime % 60)))
             if i != num:
-                delay = random.uniform(0, 30)
+                delay = random.uniform(0, 10)
                 sumTime = sumTime + delay
                 print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
                 self.__printTime__("延迟{}秒后开始下一轮出击".format(round(delay)))
