@@ -68,6 +68,7 @@ class PoiAutoColle:
         self.IMG_END_SAIL = cv2.imread("image/END_SAIL.png")
         self.IMG_DUO_FORMAT = cv2.imread("image/DUO_FORMAT.png")
         self.IMG_STOP_NEXT = cv2.imread("image/STOP_NEXT.png")
+        self.IMG_BIG_DAMAGE = cv2.imread("image/BIG_DAMAGE.png")
 
     @staticmethod
     def __printTime__(text, nextLine=True):
@@ -131,23 +132,51 @@ class PoiAutoColle:
     def __sailEnd__(self, fleet):
         # 点击决定
         self.__click__(DECIDE_CENTRAL, DECIDE_ERROR, 0, 0.5)
+        if fleet == 2:
+            self.__click__(DECIDE_FLEET2_CENTRAL, DECIDE_FLEET_ERROR, 0, 0.5)
         if fleet == 3:
             self.__click__(DECIDE_FLEET3_CENTRAL, DECIDE_FLEET_ERROR, 0, 0.5)
+        if fleet == 4:
+            self.__click__(DECIDE_FLEET4_CENTRAL, DECIDE_FLEET_ERROR, 0, 0.5)
         # 点击出击开始
         self.__click__(FINAL_ATTACK_CENTRAL, FINAL_ATTACK_ERROR, 0, 0.5)
 
-    def __supply__(self, head, num):
+    def __supply__(self, head, fleet, fuelOnly=False):
         print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
         self.__validate__(HOME_ATTACK_CENTRAL, HOME_ATTACK_ERROR, self.IMG_HOME, "母港")
         self.__click__(SUPPLY_CENTRAL, SUPPLY_ERROR, 0, 1)
-        if num == 3:
+        if fleet == 2:
+            self.__click__(SUPPLY_FLEET2_CENTRAL, SUPPLY_FLEET_ERROR, 2, 2)
+        if fleet == 3:
             self.__click__(SUPPLY_FLEET3_CENTRAL, SUPPLY_FLEET_ERROR, 2, 2)
+        if fleet == 4:
+            self.__click__(SUPPLY_FLEET4_CENTRAL, SUPPLY_FLEET_ERROR, 2, 2)
         if head:
-            self.__click__(SUPPLY_HEAD_CENTRAL, SUPPLY_HEAD_ERROR, 2, 2)
+            self.__click__(SUPPLY_1_CENTRAL, SUPPLY_ONE_ERROR, 2, 2)
             self.__click__(BOTH_SUPPLY_CENTRAL, BOTH_SUPPLY_ERROR, 0, 1)
+        elif fuelOnly:
+            self.__click__(SUPPLY_1_CENTRAL, SUPPLY_ONE_ERROR, 0, 0)
+            self.__click__(SUPPLY_2_CENTRAL, SUPPLY_ONE_ERROR, 0, 0)
+            self.__click__(SUPPLY_3_CENTRAL, SUPPLY_ONE_ERROR, 0, 0)
+            self.__click__(SUPPLY_4_CENTRAL, SUPPLY_ONE_ERROR, 0, 0)
+            self.__click__(SUPPLY_5_CENTRAL, SUPPLY_ONE_ERROR, 0, 0)
+            self.__click__(SUPPLY_6_CENTRAL, SUPPLY_ONE_ERROR, 0, 0)
+            self.__click__(SUPPLY_FUEL_CENTRAL, SUPPLY_FUEL_ERROR, 0.5, 0)
         else:
             self.__click__(ALL_SUPPLY_CENTRAL, ALL_SUPPLY_ERROR, 2, 2)
         self.__printTime__("已完成补给")
+
+    def __fix__(self):
+        print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
+        self.__validate__(HOME_ATTACK_CENTRAL, HOME_ATTACK_ERROR, self.IMG_HOME, "母港")
+        self.__click__(FIX_CENTRAL, FIX_ERROR, 0, 1)
+        self.__click__(FOURTH_FIX_CENTRAL, FOURTH_FIX_ERROR, 1, 1)
+        self.__click__(FIRST_SHIP_CENTRAL, FIRST_SHIP_ERROR, 0, 1)
+        self.__click__(USE_QUICK_CENTRAL, USE_QUICK_ERROR, 0, 1)
+        self.__click__(BEGIN_FIX_CENTRAL, BEGIN_FIX_ERROR, 0, 1)
+        self.__click__(ENSURE_CENTRAL, ENSURE_ERROR, 0, 1)
+        self.__click__(RETURN_HOME_CENTRAL, RETURN_HOME_ERROR, 5, 1)
+        self.__printTime__("已完成修理")
 
     @staticmethod
     def __compare__(img1, img2):
@@ -176,32 +205,33 @@ class PoiAutoColle:
     def __combat__(self, sec1, sec2, formation, stopNext=False):
         time.sleep(sec1)
         if formation != "none":
+            self.__validate__(COL_FORMAT_CENTRAL, FORMAT_ERROR, self.IMG_COL_FORMAT, "阵型选择")
             if formation == "col":
-                self.__validate__(COL_FORMAT_CENTRAL, FORMAT_ERROR, self.IMG_COL_FORMAT, "单纵阵")
                 self.__click__(COL_FORMAT_CENTRAL, FORMAT_ERROR, 0, 1)
                 self.__printTime__("已选择单纵阵型")
             elif formation == "row":
-                self.__validate__(ROW_FORMAT_CENTRAL, FORMAT_ERROR, self.IMG_ROW_FORMAT, "单横阵")
                 self.__click__(ROW_FORMAT_CENTRAL, FORMAT_ERROR, 0, 1)
                 self.__printTime__("已选择单横阵型")
             elif formation == "duo":
-                self.__validate__(DUO_FORMAT_CENTRAL, FORMAT_ERROR, self.IMG_DUO_FORMAT, "复纵阵")
                 self.__click__(DUO_FORMAT_CENTRAL, FORMAT_ERROR, 0, 1)
                 self.__printTime__("已选择复纵阵型")
+            elif formation == "cir":
+                self.__click__(CIR_FORMAT_CENTRAL, FORMAT_ERROR, 0, 1)
+                self.__printTime__("已选择轮型阵型")
         time.sleep(sec2)
         clickNotNight = False
         self.__printTime__("正在识别图像...", nextLine=False)
         while True:
             temImage = self.__screenshot__(NOT_NIGHT_CENTRAL, NOT_NIGHT_ERROR)
             print(".", end="")
-            if self.__compare__(temImage, self.IMG_NOT_NIGHT) > 0.95:
+            if self.__compare__(temImage, self.IMG_NOT_NIGHT) > 0.98:
                 print("已成功识别: {}".format("回避夜战"))
                 clickNotNight = True
                 break
             temImage = self.__screenshot__(NEXT_PAGE_CENTRAL, NEXT_PAGE_ERROR)
             print(".", end="")
-            if self.__compare__(temImage, self.IMG_NEXT_PAGE_S) > 0.85 or \
-                    self.__compare__(temImage, self.IMG_NEXT_PAGE_A) > 0.85:
+            if self.__compare__(temImage, self.IMG_NEXT_PAGE_S) > 0.98 or \
+                    self.__compare__(temImage, self.IMG_NEXT_PAGE_A) > 0.98:
                 print("已成功识别: {}".format("下一页"))
                 break
             time.sleep(1)
@@ -236,14 +266,14 @@ class PoiAutoColle:
             if stopNext:
                 temImage = self.__screenshot__(STOP_NEXT_CENTRAL, MOVE_ON_ERROR)
                 print(".", end="")
-                if self.__compare__(temImage, self.IMG_STOP_NEXT) > 0.85:
+                if self.__compare__(temImage, self.IMG_STOP_NEXT) > 0.98:
                     print("已成功识别: {}".format("撤退"))
                     self.__click__(STOP_NEXT_CENTRAL, MOVE_ON_ERROR, 0, 1)
                     break
             else:
                 temImage = self.__screenshot__(MOVE_ON_CENTRAL, MOVE_ON_ERROR)
                 print(".", end="")
-                if self.__compare__(temImage, self.IMG_MOVE_ON) > 0.85:
+                if self.__compare__(temImage, self.IMG_MOVE_ON) > 0.98:
                     print("已成功识别: {}".format("进击"))
                     clickMoveOn = True
                     break
@@ -252,6 +282,12 @@ class PoiAutoColle:
             if self.__compare__(temImage, self.IMG_HOME) > 0.85:
                 print("已成功识别: {}".format("母港"))
                 break
+            temImage = self.__screenshot__(BIG_DAMAGE_CENTRAL, BIG_DAMAGE_ERROR)
+            print(".", end="")
+            if self.__compare__(temImage, self.IMG_BIG_DAMAGE) > 0.85:
+                print("已成功识别: {}".format("大破"))
+                self.__click__((0.5, 0.5), (0.4, 0.4), 0, 1)
+                return True
             time.sleep(1)
         if clickReturn:
             self.__click__((0.5, 0.5), (0.4, 0.4), 0, 1)
@@ -262,14 +298,14 @@ class PoiAutoColle:
                 if stopNext:
                     temImage = self.__screenshot__(STOP_NEXT_CENTRAL, MOVE_ON_ERROR)
                     print(".", end="")
-                    if self.__compare__(temImage, self.IMG_STOP_NEXT) > 0.85:
+                    if self.__compare__(temImage, self.IMG_STOP_NEXT) > 0.98:
                         print("已成功识别: {}".format("撤退"))
                         self.__click__(STOP_NEXT_CENTRAL, MOVE_ON_ERROR, 0, 1)
                         break
                 else:
                     temImage = self.__screenshot__(MOVE_ON_CENTRAL, MOVE_ON_ERROR)
                     print(".", end="")
-                    if self.__compare__(temImage, self.IMG_MOVE_ON) > 0.85:
+                    if self.__compare__(temImage, self.IMG_MOVE_ON) > 0.98:
                         print("已成功识别: {}".format("进击"))
                         clickMoveOn = True
                         break
@@ -286,7 +322,7 @@ class PoiAutoColle:
         # 点击出击
         self.__attackStart__()
         # 点击图1-1
-        self.__click__(FIRST_MAP_CENTRAL, MAP_ERROR, 1, 1)
+        self.__click__(FIRST_MAP_CENTRAL, MAP_ERROR, 2, 1)
         # 确定出击
         self.__attackEnd__()
         # 以下为战斗部分
@@ -306,13 +342,13 @@ class PoiAutoColle:
         self.__printTime__("战斗2结束，返回母港")
         # 补给
         time.sleep(3)
-        self.__supply__(head=True, num=1)
+        self.__supply__(head=True, fleet=1)
 
     def __attack1_5__(self):
         # 点击出击
         self.__attackStart__()
         # 点击扩张海域
-        self.__click__(EXTRA_ATTACK_CENTRAL, EXTRA_ATTACK_ERROR, 1, 1)
+        self.__click__(EXTRA_ATTACK_CENTRAL, EXTRA_ATTACK_ERROR, 2, 1)
         # 点击图1-5
         self.__click__(EXTRA_5_CENTRAL, EXTRA_5_ERROR, 0, 0.5)
         # 确定出击
@@ -352,13 +388,13 @@ class PoiAutoColle:
         self.__printTime__("战斗4结束，返回母港")
         # 补给
         time.sleep(3)
-        self.__supply__(head=False, num=1)
+        self.__supply__(head=False, fleet=1)
 
     def __attack2_2__(self):
         # 点击出击
         self.__attackStart__()
         # 点击图2
-        self.__click__(SECOND_SUB_CENTRAL, SUB_MAP_ERROR, 1, 1)
+        self.__click__(SECOND_SUB_CENTRAL, SUB_MAP_ERROR, 2, 1)
         # 点击图2-2
         self.__click__(SECOND_MAP_CENTRAL, MAP_ERROR, 0, 0.5)
         # 确定出击
@@ -381,15 +417,15 @@ class PoiAutoColle:
         self.__printTime__("战斗2结束，返回母港")
         # 补给
         time.sleep(3)
-        self.__supply__(head=False, num=1)
+        self.__supply__(head=False, fleet=1)
 
     def __attack4_5__(self):
         # 点击出击
         self.__attackStart__()
         # 点击图4
-        self.__click__(FIFTH_SUB_CENTRAL, SUB_MAP_ERROR, 1, 1)
+        self.__click__(FIFTH_SUB_CENTRAL, SUB_MAP_ERROR, 2, 1)
         # 点击扩张海域
-        self.__click__(EXTRA_ATTACK_CENTRAL, EXTRA_ATTACK_ERROR, 1, 1)
+        self.__click__(EXTRA_ATTACK_CENTRAL, EXTRA_ATTACK_ERROR, 0.5, 1)
         # 点击图4-5
         self.__click__(EXTRA_5_CENTRAL, EXTRA_5_ERROR, 0, 0.5)
         # 确定出击
@@ -404,19 +440,19 @@ class PoiAutoColle:
         self.__printTime__("已点击罗盘")
         time.sleep(12)
         self.__click__(F_4_5_CENTRAL, POINT_SELECT_ERROR, 0, 1)
-        self.__click__(D_4_5_CENTRAL, POINT_SELECT_ERROR, 0, 1)
+        self.__click__(B_4_5_CENTRAL, POINT_SELECT_ERROR, 0, 1)
         self.__printTime__("已点击屏幕")
         self.__combat__(8, 45, "row", stopNext=True)
         self.__printTime__("战斗1结束，返回母港")
         # 补给
         time.sleep(3)
-        self.__supply__(head=False, num=1)
+        self.__supply__(head=False, fleet=1, fuelOnly=True)
 
-    def __attack5_2__(self):
+    def __attack5_2__(self, solo=False):
         # 点击出击
         self.__attackStart__()
         # 点击图5
-        self.__click__(SIXTH_SUB_CENTRAL, SUB_MAP_ERROR, 1, 1)
+        self.__click__(SIXTH_SUB_CENTRAL, SUB_MAP_ERROR, 2, 1)
         # 点击图5-2
         self.__click__(SECOND_MAP_CENTRAL, MAP_ERROR, 0, 0.5)
         # 确定出击
@@ -429,17 +465,27 @@ class PoiAutoColle:
         self.__validate__(COMPASS_CENTRAL, COMPASS_ERROR, self.IMG_COMPASS, "罗盘")
         self.__click__(COMPASS_CENTRAL, COMPASS_ERROR, 0, 1)
         self.__printTime__("已点击罗盘")
-        self.__combat__(14, 40, "duo", stopNext=True)
+        needFix = False
+        if solo:
+            self.__combat__(14, 15, "none", stopNext=True)
+        else:
+            needFix = self.__combat__(14, 15, "duo", stopNext=True)
         self.__printTime__("战斗1结束，返回母港")
         # 补给
         time.sleep(3)
-        self.__supply__(head=False, num=1)
+        if needFix:
+            self.__fix__()
+        if random.uniform(0, 1) > 0.75:
+            self.__supply__(head=False, fleet=1)
+            return True
+        else:
+            return False
 
     def __attack7_2__(self):
         # 点击出击
         self.__attackStart__()
         # 点击图7
-        self.__click__(FOURTH_SUB_CENTRAL, SUB_MAP_ERROR, 1, 1)
+        self.__click__(FOURTH_SUB_CENTRAL, SUB_MAP_ERROR, 2, 1)
         # 点击图7-2
         self.__click__(SECOND_MAP_CENTRAL, MAP_ERROR, 0, 0.5)
         # 确定出击
@@ -474,13 +520,21 @@ class PoiAutoColle:
         self.__printTime__("战斗3结束，返回母港")
         # 补给
         time.sleep(3)
-        self.__supply__(head=False, num=1)
+        self.__supply__(head=False, fleet=1)
 
     def __expedition03__(self, fleet):
         # 点击远征
         self.__sailStart__()
         # 点击远征任务
         self.__click__(SAIL_03_CENTRAL, SELECT_SAIL_ERROR, 2, 1)
+        # 确定出击第三舰队
+        self.__sailEnd__(fleet=fleet)
+
+    def __expedition02__(self, fleet):
+        # 点击远征
+        self.__sailStart__()
+        # 点击远征任务
+        self.__click__(SAIL_02_CENTRAL, SELECT_SAIL_ERROR, 2, 1)
         # 确定出击第三舰队
         self.__sailEnd__(fleet=fleet)
 
@@ -533,9 +587,12 @@ class PoiAutoColle:
         print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
         self.__printTime__("开始进行{}练级(共{}回)".format(sortieMap, num))
         sumTime = 0
+        supplied = True
         for i in range(1, num + 1):
             if i != 1:
-                self.__click__(RETURN_HOME_CENTRAL, RETURN_HOME_ERROR, 0, 0)
+                if supplied:
+                    self.__click__(RETURN_HOME_CENTRAL, RETURN_HOME_ERROR, 0, 0)
+                self.__validate__(HOME_ATTACK_CENTRAL, HOME_ATTACK_ERROR, self.IMG_HOME, "母港")
             startTime = time.time()
             print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
             self.__printTime__("第{}回{}练级开始(共{}回)".format(i, sortieMap, num))
@@ -547,10 +604,15 @@ class PoiAutoColle:
                 self.__attack2_2__()
             elif sortieMap == '4-5':
                 self.__attack4_5__()
+            elif sortieMap == '5-2':
+                supplied = self.__attack5_2__()
+            elif sortieMap == '5-2solo':
+                supplied = self.__attack5_2__(solo=True)
             elif sortieMap == '7-2':
                 self.__attack7_2__()
             if i == num:
-                self.__click__(RETURN_HOME_CENTRAL, RETURN_HOME_ERROR, 2, 2)
+                if supplied:
+                    self.__click__(RETURN_HOME_CENTRAL, RETURN_HOME_ERROR, 2, 2)
             print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
             endTime = time.time()
             diffTime = endTime - startTime
@@ -558,7 +620,7 @@ class PoiAutoColle:
             self.__printTime__(
                 "第{}回{}练级结束(共{}回)，耗时{}分{}秒".format(i, sortieMap, num, int(diffTime) // 60, round(diffTime % 60)))
             if i != num:
-                delay = random.uniform(0, 10)
+                delay = random.uniform(1, 5)
                 sumTime = sumTime + delay
                 print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
                 self.__printTime__("延迟{}秒后开始下一轮出击".format(round(delay)))
@@ -574,16 +636,19 @@ class PoiAutoColle:
         self.__printTime__("第{}舰队开始进行{}号远征(共{}回)".format(fleet, sailMap, num))
         for i in range(1, num + 1):
             duration = None
+            if sailMap == "2":
+                duration = 30
+                self.__expedition02__(fleet)
             if sailMap == "3":
                 duration = 20
                 self.__expedition03__(fleet)
             print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
             self.__printTime__("第{}舰队开始第{}回{}号远征(共{}回)".format(fleet, i, sailMap, num))
             times = duration // 5
-            for j in range(1, times):
-                time.sleep(200)
-                self.__printTime__("距离远征结束还有{}分钟".format(duration - j * 5))
             mod = duration % 5
+            for j in range(1, times):
+                time.sleep(300)
+                self.__printTime__("距离远征结束还有{}分钟".format(duration - j * 5))
             time.sleep(60 * 5)
             if mod != 0:
                 self.__printTime__("距离远征结束还有{}分钟".format(mod))
@@ -601,10 +666,11 @@ class PoiAutoColle:
             self.__click__((0.5, 0.5), (0.4, 0.4), 1, 0.5)
             self.__printTime__("已返回主港")
             time.sleep(3)
-            self.__supply__(head=False, num=fleet)
+            self.__supply__(head=False, fleet=fleet)
             self.__click__(RETURN_HOME_CENTRAL, RETURN_HOME_ERROR, 2, 2)
             print("- - - - - - - - - - - - - - - - - - - - - - - - - -")
             self.__printTime__("第{}舰队第{}回{}号远征结束(共{}回)".format(fleet, i, sailMap, num))
+            time.sleep(5)
         print("★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★")
         self.__printTime__("第{}舰队{}号远征结束(共{}回)".format(fleet, sailMap, num))
         playsound("audio/end.mp3")
